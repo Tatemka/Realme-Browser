@@ -8,26 +8,39 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+    # Эта инструкция позволит протестировать Node.js 24 уже сейчас,
+    # чтобы избежать неожиданностей после 16 июня.
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
     steps:
+    # Шаг 1: Загружаем ваш код
     - name: Checkout code
       uses: actions/checkout@v4
-    
+
+    # Шаг 2: Настраиваем Python (версия 3.11 надёжна для Buildozer)
     - name: Setup Python
       uses: actions/setup-python@v5
       with:
         python-version: '3.11'
-    
+
+    # Шаг 3: Устанавливаем системные зависимости и Buildozer
     - name: Install dependencies
       run: |
         sudo apt update
         sudo apt install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev
+        pip install --upgrade pip
         pip install buildozer cython
-    
+
+    # Шаг 4: Запускаем сборку APK
     - name: Build APK
       run: |
+        # Инициализируем Buildozer, если ещё нет конфига (хотя он у вас есть)
+        buildozer init
+        # Запускаем сборку в режиме отладки (debug)
         buildozer android debug
-    
+
+    # Шаг 5: Загружаем готовый APK как артефакт сборки
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
