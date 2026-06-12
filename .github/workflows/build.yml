@@ -25,6 +25,7 @@ jobs:
     
     - name: Build APK
       run: |
+        # Создаём конфиг (та же команда, что и была)
         echo '[app]' > buildozer.spec
         echo 'title = Realme Browser' >> buildozer.spec
         echo 'package.name = realmebrowser' >> buildozer.spec
@@ -45,7 +46,11 @@ jobs:
         echo 'log_level = 2' >> buildozer.spec
         echo 'warn_on_root = 0' >> buildozer.spec
         
-        cat buildozer.spec
+        # [КЛЮЧЕВОЕ ИСПРАВЛЕНИЕ] Принудительно устанавливаем Build Tools 29.0.0
+        # Это гарантирует, что инструмент 'aidl' будет на месте.
+        ~/.buildozer/android/platform/android-sdk/tools/bin/sdkmanager "build-tools;29.0.0"
+        
+        # Теперь запускаем основную сборку
         buildozer android debug
     
     - name: Upload APK
