@@ -23,9 +23,8 @@ jobs:
         sudo apt install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev
         pip install buildozer cython
     
-    - name: Build APK (First run - downloads SDK)
+    - name: Create buildozer.spec
       run: |
-        # Создаём конфиг buildozer.spec
         echo '[app]' > buildozer.spec
         echo 'title = Realme Browser' >> buildozer.spec
         echo 'package.name = realmebrowser' >> buildozer.spec
@@ -45,14 +44,31 @@ jobs:
         echo '[buildozer]' >> buildozer.spec
         echo 'log_level = 2' >> buildozer.spec
         echo 'warn_on_root = 0' >> buildozer.spec
-        
-        # Эта команда загрузит SDK, NDK и подготовит среду.
-        # Она почти наверняка упадёт с ошибкой, но это нормально для первого раза.
-        buildozer android debug || echo "Первый запуск завершён с ошибкой (ожидаемо), переходим ко второму шагу."
     
-    - name: Build APK (Second run - actual build)
+    - name: First buildozer run (download SDK)
       run: |
-        # А вот эта команда уже соберёт APK, так как всё необходимое уже скачано.
+        # Запускаем buildozer, чтобы он скачал SDK
+        buildozer android debug || true
+    
+    - name: Install build-tools manually
+      run: |
+        # Путь к sdkmanager
+        SDKMANAGER=$HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager
+        
+        # Если не нашёлся, ищем в другом месте
+        if [ ! -f "$SDKMANAGER" ]; then
+          SDKMANAGER=$HOME/.buildozer/android/platform/android-sdk/tools/bin/sdkmanager
+        fi
+        
+        # Делаем исполняемым
+        chmod +x $SDKMANAGER
+        
+        # Устанавливаем build-tools (aidl будет внутри)
+        echo y | $SDKMANAGER "build-tools;30.0.3"
+        echo y | $SDKMANAGER "platforms;android-30"
+    
+    - name: Final build APK
+      run: |
         buildozer android debug
     
     - name: Upload APK
