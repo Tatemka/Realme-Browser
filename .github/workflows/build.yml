@@ -24,33 +24,31 @@ jobs:
       
       - name: Create buildozer.spec
         run: |
-          cat > buildozer.spec << 'EOF'
-[app]
-title = Realme Browser
-package.name = realmebrowser
-package.domain = com.realme.browser
-source.dir = .
-source.include_exts = py
-version = 1.0.0
-requirements = python3,kivy
-orientation = portrait
-android.permissions = INTERNET
-android.api = 30
-android.minapi = 21
-android.ndk = 25c
-android.sdk = 30
-android.archs = arm64-v8a
-
-[buildozer]
-log_level = 2
-warn_on_root = 0
-EOF
+          echo "[app]" > buildozer.spec
+          echo "title = Realme Browser" >> buildozer.spec
+          echo "package.name = realmebrowser" >> buildozer.spec
+          echo "package.domain = com.realme.browser" >> buildozer.spec
+          echo "source.dir = ." >> buildozer.spec
+          echo "source.include_exts = py" >> buildozer.spec
+          echo "version = 1.0.0" >> buildozer.spec
+          echo "requirements = python3,kivy" >> buildozer.spec
+          echo "orientation = portrait" >> buildozer.spec
+          echo "android.permissions = INTERNET" >> buildozer.spec
+          echo "android.api = 30" >> buildozer.spec
+          echo "android.minapi = 21" >> buildozer.spec
+          echo "android.ndk = 25c" >> buildozer.spec
+          echo "android.sdk = 30" >> buildozer.spec
+          echo "android.archs = arm64-v8a" >> buildozer.spec
+          echo "" >> buildozer.spec
+          echo "[buildozer]" >> buildozer.spec
+          echo "log_level = 2" >> buildozer.spec
+          echo "warn_on_root = 0" >> buildozer.spec
       
-      - name: Download SDK with buildozer
+      - name: Download SDK
         run: |
           buildozer android debug || true
       
-      - name: Install build-tools manually
+      - name: Install build-tools
         run: |
           mkdir -p ~/.buildozer/android/platform/android-sdk/build-tools/
           cd ~/.buildozer/android/platform/android-sdk/
@@ -59,11 +57,6 @@ EOF
           rm build-tools_r30.0.3-linux.zip
           mv build-tools_r30.0.3-linux build-tools/30.0.3
           chmod +x build-tools/30.0.3/aidl
-          echo "Aidl installed successfully"
-      
-      - name: Set PATH
-        run: |
-          echo "$HOME/.buildozer/android/platform/android-sdk/build-tools/30.0.3" >> $GITHUB_PATH
       
       - name: Build APK
         run: |
