@@ -11,22 +11,33 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-      
-      - name: Install buildozer
+      - name: Create buildozer.spec
         run: |
-          sudo apt update
-          sudo apt install -y python3-pip git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev
-          pip install buildozer cython
-      
+          echo '[app]' > buildozer.spec
+          echo 'title = Realme Browser' >> buildozer.spec
+          echo 'package.name = realmebrowser' >> buildozer.spec
+          echo 'package.domain = com.realme.browser' >> buildozer.spec
+          echo 'source.dir = .' >> buildozer.spec
+          echo 'source.include_exts = py' >> buildozer.spec
+          echo 'version = 1.0.0' >> buildozer.spec
+          echo 'requirements = python3,kivy' >> buildozer.spec
+          echo 'orientation = portrait' >> buildozer.spec
+          echo 'android.permissions = INTERNET' >> buildozer.spec
+          echo 'android.api = 30' >> buildozer.spec
+          echo 'android.minapi = 21' >> buildozer.spec
+          echo 'android.ndk = 25c' >> buildozer.spec
+          echo 'android.sdk = 30' >> buildozer.spec
+          echo 'android.archs = arm64-v8a' >> buildozer.spec
+          echo '' >> buildozer.spec
+          echo '[buildozer]' >> buildozer.spec
+          echo 'log_level = 2' >> buildozer.spec
+          echo 'warn_on_root = 0' >> buildozer.spec
+          
       - name: Build APK
         uses: digreatbrian/buildozer-action@v2
         with:
           command: buildozer android debug
-      
+          
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
