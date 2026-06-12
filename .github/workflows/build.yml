@@ -8,63 +8,16 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Setup Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.11'
-    
-    - name: Install dependencies
-      run: |
-        sudo apt update
-        sudo apt install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev
-        pip install buildozer cython
-    
-    - name: Create buildozer.spec
-      run: |
-        echo '[app]' > buildozer.spec
-        echo 'title = Realme Browser' >> buildozer.spec
-        echo 'package.name = realmebrowser' >> buildozer.spec
-        echo 'package.domain = com.realme.browser' >> buildozer.spec
-        echo 'source.dir = .' >> buildozer.spec
-        echo 'source.include_exts = py' >> buildozer.spec
-        echo 'version = 1.0.0' >> buildozer.spec
-        echo 'requirements = python3,kivy' >> buildozer.spec
-        echo 'orientation = portrait' >> buildozer.spec
-        echo 'android.permissions = INTERNET' >> buildozer.spec
-        echo 'android.api = 30' >> buildozer.spec
-        echo 'android.minapi = 21' >> buildozer.spec
-        echo 'android.ndk = 25c' >> buildozer.spec
-        echo 'android.sdk = 30' >> buildozer.spec
-        echo 'android.archs = arm64-v8a' >> buildozer.spec
-        echo '' >> buildozer.spec
-        echo '[buildozer]' >> buildozer.spec
-        echo 'log_level = 2' >> buildozer.spec
-        echo 'warn_on_root = 0' >> buildozer.spec
-    
-    - name: Download SDK
-      run: |
-        buildozer android debug || true
-    
-    - name: Fix aidl
-      run: |
-        cd ~/.buildozer/android/platform/android-sdk/build-tools/
-        wget https://dl.google.com/android/repository/build-tools_r30.0.3-linux.zip
-        unzip -q build-tools_r30.0.3-linux.zip
-        ls -la
-        mv build-tools_r30.0.3-linux/* 30.0.3/ 2>/dev/null || mkdir -p 30.0.3 && mv * 30.0.3/ 2>/dev/null
-        chmod +x 30.0.3/aidl 2>/dev/null || true
-        ls -la 30.0.3/
-    
-    - name: Build APK
-      run: |
-        buildozer android debug
-    
-    - name: Upload APK
-      uses: actions/upload-artifact@v4
-      with:
-        name: RealmeBrowser
-        path: bin/*.apk
+      - uses: actions/checkout@v4
+      
+      - name: Build APK
+        uses: digreatbrian/buildozer-action@v2
+        with:
+          command: buildozer android debug
+          
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: RealmeBrowser
+          path: bin/*.apk
