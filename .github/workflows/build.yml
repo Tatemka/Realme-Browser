@@ -48,14 +48,16 @@ jobs:
     - name: Download SDK
       run: |
         buildozer android debug || true
-        mkdir -p ~/.buildozer/android/platform/android-sdk/build-tools/
     
     - name: Fix aidl
       run: |
+        cd ~/.buildozer/android/platform/android-sdk/build-tools/
         wget https://dl.google.com/android/repository/build-tools_r30.0.3-linux.zip
         unzip -q build-tools_r30.0.3-linux.zip
-        mv android-9 ~/.buildozer/android/platform/android-sdk/build-tools/30.0.3
-        chmod +x ~/.buildozer/android/platform/android-sdk/build-tools/30.0.3/aidl
+        ls -la
+        mv build-tools_r30.0.3-linux/* 30.0.3/ 2>/dev/null || mkdir -p 30.0.3 && mv * 30.0.3/ 2>/dev/null
+        chmod +x 30.0.3/aidl 2>/dev/null || true
+        ls -la 30.0.3/
     
     - name: Build APK
       run: |
