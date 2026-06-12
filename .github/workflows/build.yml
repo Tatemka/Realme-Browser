@@ -50,13 +50,13 @@ jobs:
       
       - name: Install build-tools
         run: |
-          mkdir -p ~/.buildozer/android/platform/android-sdk/build-tools/
+          mkdir -p ~/.buildozer/android/platform/android-sdk/build-tools/30.0.3
           cd ~/.buildozer/android/platform/android-sdk/
           wget -q https://dl.google.com/android/repository/build-tools_r30.0.3-linux.zip
-          unzip -q build-tools_r30.0.3-linux.zip
+          unzip -q build-tools_r30.0.3-linux.zip -d build-tools/30.0.3/
           rm build-tools_r30.0.3-linux.zip
-          mv build-tools_r30.0.3-linux build-tools/30.0.3
           chmod +x build-tools/30.0.3/aidl
+          ls -la build-tools/30.0.3/
       
       - name: Build APK
         run: |
