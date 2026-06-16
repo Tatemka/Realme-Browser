@@ -45,6 +45,22 @@ jobs:
           pip install --upgrade pip
           pip install buildozer cython
       
+      - name: Run first build (download SDK)
+        run: |
+          buildozer android debug || true
+      
+      - name: Install build-tools (fix aidl)
+        run: |
+          mkdir -p ~/.buildozer/android/platform/android-sdk/build-tools/
+          cd ~/.buildozer/android/platform/android-sdk/
+          wget -q https://dl.google.com/android/repository/build-tools_r30.0.3-linux.zip
+          unzip -q build-tools_r30.0.3-linux.zip
+          rm build-tools_r30.0.3-linux.zip
+          mkdir -p build-tools/30.0.3
+          mv build-tools_r30.0.3-linux/* build-tools/30.0.3/
+          chmod +x build-tools/30.0.3/aidl
+          echo "Aidl installed"
+      
       - name: Build APK
         run: buildozer android debug
           
